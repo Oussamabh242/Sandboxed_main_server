@@ -5,14 +5,24 @@ from . import utils
 from .db import db, init_db, Problem
 import json
 from flask_cors import CORS 
+from flask_swagger_ui import get_swaggerui_blueprint
 
 submit = "http://127.0.0.1:3000/submit"
 run = "http://127.0.0.1:3000/run"
 problemCreate = "http://127.0.0.1:3000/problem"
 
-
+SWAGGER_URL = "/swagger" 
+API_URL = "/static/swagger.json" 
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config = {
+        'app_name': 'Access API'
+    }
+)
 
 app = Flask(__name__)
+app.register_blueprint(swagger_ui_blueprint , url_prefix = SWAGGER_URL)
 CORS(app) 
 init_db(app)
 

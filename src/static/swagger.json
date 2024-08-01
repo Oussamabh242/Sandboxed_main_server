@@ -1,0 +1,327 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sandboxed API",
+    "version": "1.0.0",
+    "description": "API for managing coding problems and submissions."
+  },
+  "paths": {
+    "/problem": {
+      "post": {
+        "summary": "Create a new problem",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "constraints": { "type": "string" },
+                  "difficulty": { "type": "string" },
+                  "testCases": { "type": "string" },
+                  "order": { "type": "integer" },
+                  "functionName": { "type": "string" },
+                  "execTime": { "type": "integer" },
+                  "templates": {
+                    "type": "object",
+                    "properties": {
+                      "python": { "type": "string" },
+                      "typescript": { "type": "string" },
+                      "php": { "type": "string" }
+                    }
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "constraints",
+                  "difficulty",
+                  "testCases",
+                  "order",
+                  "functionName",
+                  "execTime",
+                  "templates"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Problem created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "problem_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all problems",
+        "responses": {
+          "200": {
+            "description": "List of problems",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "title": { "type": "string" },
+                      "description": { "type": "string" },
+                      "constraints": { "type": "string" },
+                      "difficulty": { "type": "string" },
+                      "templates": {
+                        "type": "object",
+                        "properties": {
+                          "python": { "type": "string" },
+                          "typescript": { "type": "string" },
+                          "php": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/problem/{problemID}": {
+      "get": {
+        "summary": "Get a specific problem by ID",
+        "parameters": [
+          {
+            "name": "problemID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Problem details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "constraints": { "type": "string" },
+                    "difficulty": { "type": "string" },
+                    "templates": {
+                      "type": "object",
+                      "properties": {
+                        "python": { "type": "string" },
+                        "typescript": { "type": "string" },
+                        "php": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error happened",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/code/submit": {
+      "post": {
+        "summary": "Submit user code for a problem",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": { "type": "string" },
+                  "language": { "type": "string" },
+                  "problemId": { "type": "string" }
+                },
+                "required": [
+                  "code",
+                  "language",
+                  "problemId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code submission result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": { "type": "string" },
+                        "passed": { "type": "integer" }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "code": { "type": "integer" },
+                        "expected": { "type": "boolean" },
+                        "input": {
+                          "type": "object",
+                          "properties": {
+                            "x": { "type": "integer" }
+                          }
+                        },
+                        "message": { "type": "string" },
+                        "passed": { "type": "integer" },
+                        "result": { "type": "string", "nullable": true },
+                        "stderr": { "type": "string" },
+                        "stdout": { "type": "string" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/code/run": {
+      "post": {
+        "summary": "Run user code for a problem",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": { "type": "string" },
+                  "language": { "type": "string" },
+                  "problemId": { "type": "string" }
+                },
+                "required": [
+                  "code",
+                  "language",
+                  "problemId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code run result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": { "type": "integer" },
+                      "expected": { "type": "boolean" },
+                      "input": {
+                        "type": "object"  
+                      },
+                      "message": { "type": "string" },
+                      "passed": { "type": "integer" },
+                      "result": { "type": "string", "nullable": true },
+                      "stderr": { "type": "string" },
+                      "stdout": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something went wrong",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
