@@ -7,9 +7,9 @@ import json
 from flask_cors import CORS 
 from flask_swagger_ui import get_swaggerui_blueprint
 
-submit = "http://127.0.0.1:3000/submit"
-run = "http://127.0.0.1:3000/run"
-problemCreate = "http://127.0.0.1:3000/problem"
+submit = "http://127.0.0.1:3002/submit"
+run = "http://127.0.0.1:3002/run"
+problemCreate = "http://127.0.0.1:3002/problem"
 
 SWAGGER_URL = "/swagger" 
 API_URL = "/static/swagger.json" 
@@ -56,8 +56,8 @@ def run_code():
 def problems():
     if request.method == "POST" : 
         try:
+            # create Problem
             data = request.json
-            print(data)
             problem = Problem(
                 title=data.get("title"),
                 description=data.get("description"),
@@ -69,13 +69,15 @@ def problems():
             db.session.flush() 
             sandbox_req = {
             "id" :problem.id ,
-            "testCases" : data["testCases"],
+            "testCases" : json.dumps(data["testCases"]),
             "order": data["order"],
             "functionName" :data["functionName"],
-            "execTime": data["execTime"]
+            "timeout": data["timeout"] , 
+            "argType": data["argType"]
             }
-
+                
             sandbox_res = requests.post(problemCreate , json=sandbox_req) ; 
+            print(sandbox_res.status_code); 
             if sandbox_res.status_code == 201 : 
                 db.session.commit()
                 return jsonify({"message": "Problem created successfully", "problem_id": problem.id}), 201
